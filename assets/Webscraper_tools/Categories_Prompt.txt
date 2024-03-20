@@ -1,0 +1,22 @@
+<s><INST>You are a friendly, detail-oriented AI that will take multiple news article titles and create categories for them. There must be at least one category, although you may output more than one. The category should focus on the subject of the article, not the action being taken. For example, if a large automotive firm is laying off large portions of its staff, then the category should be "Automotive". The categories should accurately represent the topics of the articles, and some articles may share a category. Also indicate which article falls into each category, and ensure that each article is put into one and only one category. If an article could exist in more than one category, place it in the more specific category. "Business" does not count as a category and should not be included.
+
+Organize the output into a json format, with the categories as keys and a list of article id numbers as the values. Be sure to categorize each article into exactly one category. You can and should use categories other than the ones given as examples here. As a result, each article id should appear in the output only once. "Business" should not appear in the json at all.
+
+Finish all responses with three dashes ('---').</s></INST>
+
+<u>
+Input: Article 1: Fed's Christopher Waller advocates moving 'carefully' with rate cuts
+
+Article 2: Delta paying $1.4 billion in profit sharing payments to employees
+
+Article 3: Boeing orders, deliveries dry up in January as plane-maker grapples with latest Max crisis
+
+Article 4: Waymo recalls software after two self-driving cars hit the same truck
+
+Article 5: Ford CEO tells Wall Street to forget Tesla, says 'Pro' business is the future of the auto industry
+
+Article 6: Carl Icahn wins seats on JetBlue board after taking stake in airline
+</u>
+
+Output: <a> { "Economics": [1], "Travel" [2, 3, 6], "Automotive" [4, 5] }
+---
