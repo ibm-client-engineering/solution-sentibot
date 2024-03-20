@@ -1,0 +1,84 @@
+---
+title: Create
+description: create
+custom_edit_url: null
+---
+
+# Create
+
+## Part 1: Webscraping
+
+The first part of this project ecompasses retrieving articles from online news sources. The first step is to visit the website you would like to scrape from and observe the html using **inspect element**. For this example, we will be scraping from the CNN economy news section. From this page, we want to retrieve all of the links on the webpage that lead to articles, so we need to find a common tag that every headline link shares. The element for a headline might look something like this:
+
+```html 
+<a href="/2024/02/01/economy/january-jobs-report-preview/index.html" class="container__link container__link--type-article container_lead-plus-headlines-with-images__link" data-link-type="article" data-zjs="click" data-zjs-cms_id="cms.cnn.com/_pages/cl8lvnljb0000ldp3b79d6s4l@published" data-zjs-canonical_url="https://www.cnn.com/business/economy" data-zjs-zone_id="cms.cnn.com/_components/zone/instances/cl8lvnlna0013ldp3vxczixnk@published" data-zjs-zone_name="undefined" data-zjs-zone_type="zone_layout--5-4-3" data-zjs-zone_position_number="1" data-zjs-zone_total_number="3" data-zjs-container_id="cms.cnn.com/_components/container/instances/cl8lvnlna0014ldp32buq116y@published" data-zjs-container_name="undefined" data-zjs-container_type="container_lead-plus-headlines-with-images" data-zjs-container_position_number="1" data-zjs-container_total_number="3" data-zjs-card_id="cms.cnn.com/_components/card/instances/cl8lvnlna0014ldp32buq116y_fill_1@published" data-zjs-card_name="Fed&nbsp;Chair&nbsp;Powell&nbsp;says the job market is still strong. Here’s what to know about the numbers" data-zjs-card_type="card" data-zjs-card_position_number="1" data-zjs-card_total_number="8">...</a>
+```
+
+Within this HTML element we can see that the partial link to the article is embedded under the href attribute. With this information, we can now write python code using BeautifulSoup to extract the headlines from this page.
+```python
+def scrape_cnn() :
+    cnn_URL = "https://www.cnn.com/business/economy"
+    cnn_page = requests.get(cnn_URL)
+
+    cnn_soup = BeautifulSoup(cnn_page.content, "html.parser")
+    cnn_articles = cnn_soup.find_all('div', {'class': 'container_lead-plus-headlines-with-images__item'})
+
+    cnn_links = []
+    for article in cnn_articles :
+        if not any(avoided in article['data-open-link'] for avoided in ['live', 'videos']) : #skip live articles and videos for now they have a different format
+            cnn_links.append("https://www.cnn.com" + article['data-open-link'])
+```
+
+Now we can move on to extracting information from the articles. For each article we are interested in three things: the title, the date it was published, and the article's content. We repeat a very similar process to find the html elements associated with each of these things, and we consolidate them into a list. We repeat this step for every single article link collected.
+
+```python
+cnn_articles= []
+
+    for link in cnn_links:
+
+        page = requests.get(link)
+
+        soup = BeautifulSoup(page.content, "html.parser")
+        cnn_title = soup.find('h1', {'class': 'headline__text inline-placeholder'})
+        cnn_content = soup.find('div', {'class': 'article__content-container'})
+        timestamp = soup.find('div', {'class': 'timestamp'})
+        timestr = timestamp.text
+        digits = re.search(r"\d", timestr)
+        dt = parser.parse(timestr[digits.start(0):])
+
+        try :
+            cnn_articles.append(['CNN', remove_formatting(cnn_title.text),remove_formatting(cnn_content.text), dt])
+        
+        except:
+            print("This article has no text!")
+    
+    return cnn_articles
+```
+
+The try catch block here is to handle cases where the article may have a slightly different format or include no text at all.
+
+## Part 2: Watsonx
+
+Now we need to connect to watsonx in order to analyze the news articles that we have collected. Once you have created a watsonx account, create a new empty project for the webscraper. In the new project, find the Project ID under **Manage** &rarr; **General**, and save it for later use.
+
+While still under the **Manage** header, click on the **Services and integrations** section on the left hand side. Under the **IBM Services** tab, click **Associate Service** and add **WatsonMachineLearning**.
+
+Once the project has been created, we need to create an API key for our demo to use. Return to the IBM Cloud homepage and find the **Manage** header on the top. Navigate to **Manage** &rarr; **Access (IAM)** &rarr; **API Keys** and select **Create +**. Give the new API key a clear name such as "Watsonx Webscraper Demo", and a description if you would like. Once the key has been created, save it somewhere secure, as you will not be able to retrieve the key again. 
+
+Now create a file in the assets folder called **API_creds.json** with this format:
+```
+{
+    "BAM_Key": PUT YOUR BAM KEY HERE,
+    "BAM_URL": PUT YOUR BAM URL HERE,
+    "WX_Key" : PUT YOUR WX KEY HERE,
+    "WX_Project" : PUT YOUR WX PROJECT ID HERE
+}
+```
+The BAM key and url can be ignored if you are using watsonx.
+
+## Part 3: Streamlit
+
+The GUI for the app was created using streamlit. Streamlit is an easy to use python package for creating browser-based applications. Refer to the [streamlit documentation](https://docs.streamlit.io) to get started and learn more about how to use streamlit, both Articles.py and Bank_Exec.py in the /assets/ folder use streamlit frontends.
+
+
+
