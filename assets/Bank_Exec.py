@@ -2,7 +2,8 @@ import pandas as pd
 import streamlit as st
 import time
 from Webscraper_tools.Webscrape import *
-from Webscraper_tools.Watsonx_connection import single_article_summary, get_full_summary
+from Webscraper_tools.Watsonx_connection import single_article_summary, get_full_summary, get_company_names
+from Webscraper_tools.ticker_api import get_ticker_from_name
 from menu import menu
 
 st.set_page_config(layout="wide")
@@ -56,7 +57,14 @@ if st.session_state['summary_success'] :
       for index, row_in_category in cat_rows :
          #print(row_in_category)
          if row_in_category["Summary"] :
-            st.write("- " + row_in_category["Summary"])
+            summ = row_in_category["Summary"]
+            #st.write("- " + summ)
+            for comp in get_company_names(summ) :
+               ticker = get_ticker_from_name(comp)
+               if ticker :
+                  summ = summ.replace(comp, f"[{comp}](https://finance.yahoo.com/quote/{ticker})")
+            st.write("- " + summ)
+                  
 else :
    st.write("Summary retrieval failure")
 

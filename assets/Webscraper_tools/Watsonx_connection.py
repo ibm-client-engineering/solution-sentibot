@@ -3,7 +3,7 @@ from ibm_watson_machine_learning.foundation_models import Model
 import requests
 import json
 from .util import update_row_with_dict, get_net_sentiment
-from Webscraper_tools import prompt, single_article_summary_prompt, categories_prompt, single_bullet_prompt
+from Webscraper_tools import prompt, single_article_summary_prompt, categories_prompt, single_bullet_prompt, companies_prompt
 import traceback
 from genai.client import Client
 from genai.credentials import Credentials
@@ -34,6 +34,12 @@ def Prompt_Input(prompt, articleTitle, articleText) :
 
     Text: {articleText}
     Output:'''
+    return prompt + input
+
+def Prompt_Input_Companies(prompt, text) :
+    input = f'''
+    Input: {text}
+    Output: [/INST]</s>'''
     return prompt + input
 
 def Prompt_Input_Single_Article_Summary(prompt, articleTitle, articleText) :
@@ -145,6 +151,18 @@ def do_single_llm(df, i) :
         print(f'Error retrieving output to dictionary on row {i}')
         #print(traceback.format_exc(e))
 
+def get_company_names(text) :
+    prompt_text = companies_prompt
+    response = Query_BAM(Prompt_Input_Companies(prompt_text, text), 100)
+    try:
+        output_text = response.replace('---', '').replace('\n', '')
+        lst = json.loads(output_text)
+        return lst
+    except Exception as e:
+        print(f'Error retrieving output to list')
+        return []
+
+
 #Run summary for bullet point summary on single article (id i in dataframe df)
 def single_article_summary(df, i) :
     prompt_text = single_article_summary_prompt
@@ -181,10 +199,11 @@ def get_full_summary(df) :
 
     try:
         response = get_categories(df).replace('---', '')
-        #print(response)
+        print(response)
         category_dictionary = json.loads(response)
     except Exception as e:
         print('Error retrieving category output to dictionary')
+        print(e)
         p_bar.empty()
         return False
     
