@@ -29,3 +29,4 @@ assets/API_creds.json
 
 #pycache
 __pycache__/
+*.pyc
