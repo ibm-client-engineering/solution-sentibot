@@ -2,12 +2,12 @@ import pandas as pd
 import streamlit as st
 import time
 from Webscraper_tools.Webscrape import *
-from Webscraper_tools.Watsonx_connection import single_article_summary, get_full_summary, get_company_names
+from Webscraper_tools.Watsonx_connection import single_article_summary, get_full_summary, place_ticker_batch
 from Webscraper_tools.ticker_api import get_ticker_from_name
 from menu import menu
 
 st.set_page_config(layout="wide")
-st.title("News Analysis with Watson:blue[x]")
+st.title("News Analysis with watson:blue[x]")
 
 
 def refresh() :
@@ -44,26 +44,33 @@ num_articles, _ = df.shape
 if "summary_success" not in st.session_state :
    st.session_state["summary_success"] = False
 
-#Summary Dashboard (commented out for now the prompting is broken)
+#Summary Dashboard
 if "summary_try" not in st.session_state or not st.session_state["summary_try"]:
    st.session_state["summary_try"] = True
    st.session_state["summary_success"] = get_full_summary(df)
 
+if 'got_companies' not in st.session_state or not st.session_state['got_companies'] :
+   st.session_state['got_companies'] = False
+
+#Edit summaries to include company links
+if st.session_state['summary_success'] and not st.session_state['got_companies'] :
+   place_ticker_batch(df)
+   st.session_state['got_companies'] = True
+   
+
+#display the dashboard
 if st.session_state['summary_success'] :
    for cat in df.Category.unique() :
       #print("Category: " + cat)
+      if cat == 'nan' or cat is None :
+         continue
       st.write("**" + str(cat) + "**")
       cat_rows = df.loc[df["Category"] == cat].iterrows()
       for index, row_in_category in cat_rows :
          #print(row_in_category)
          if row_in_category["Summary"] :
-            summ = row_in_category["Summary"]
-            #st.write("- " + summ)
-            for comp in get_company_names(summ) :
-               ticker = get_ticker_from_name(comp)
-               if ticker :
-                  summ = summ.replace(comp, f"[{comp}](https://finance.yahoo.com/quote/{ticker})")
-            st.write("- " + summ)
+            summ = row_in_category["Summary"]     
+            st.write(summ)
                   
 else :
    st.write("Summary retrieval failure")

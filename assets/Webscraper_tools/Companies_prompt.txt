@@ -14,3 +14,7 @@ Input: Nordstrom's founding family is exploring the possibility of taking the co
 Output: ["Nordstrom, Morgan Stanley"]
 ---
 
+Input: The U.S. has the most millionaires and billionaires in the world, with 5.5 million Americans having liquid assets of over $1 million, a 62% increase over the past decade, according to the 2024 USA Wealth Report from Henley & Partners and New World Wealth.- The U.S. has 37% of the world's millionaires, up from 35% in 2018, while China has 2,352 centi-millionaires and 305 billionaires, compared to 9,850 centi-millionaires and 788 billionaires in the U.S.- China had a net outflow of 13,500 millionaires in 2023, while the U.S. had a net inflow of 2,200 millionaires
+Output: []
+---
+

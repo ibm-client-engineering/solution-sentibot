@@ -3,6 +3,7 @@ from ibm_watson_machine_learning.foundation_models import Model
 import requests
 import json
 from .util import update_row_with_dict, get_net_sentiment
+from .ticker_api import get_ticker_from_name
 from Webscraper_tools import prompt, single_article_summary_prompt, categories_prompt, single_bullet_prompt, companies_prompt
 import traceback
 from genai.client import Client
@@ -88,6 +89,24 @@ def Query_BAM(prompt, num_tokens) :
     print(response.generations[0][0])
     return response.generations[0][0].text
 
+#Returns the generated text
+def Query_BAM_Batch(prompts, num_tokens) :
+    client = Client(credentials=Credentials(api_key=BAM_API_Key, api_endpoint=BAM_URL))
+    parameters = TextGenerationParameters(
+        max_new_tokens=num_tokens,
+        decoding_method=DecodingMethod.GREEDY,
+        include_stop_sequence=False,
+        stop_sequences=['---']
+    )
+    llm = LangChainInterface(
+        model_id=model_id,
+        client=client,
+        parameters=parameters
+    )
+    response = llm.generate(prompts=prompts)
+    print(response.generations)
+    return response.generations
+
 def Query_WX(text) :
     my_credentials = { 
     "url"    : "https://us-south.ml.cloud.ibm.com", 
@@ -162,6 +181,28 @@ def get_company_names(text) :
         print(f'Error retrieving output to list')
         return []
 
+#place the link to the yahoo finance page in the summaries
+def place_ticker_batch(df) :
+    prompt_text = companies_prompt
+    prompts = []
+    for _, row in df.iterrows() :
+        prompts.append(Prompt_Input_Companies(prompt_text, row["Summary"]))
+
+    #get all of the companies from the text
+    response = Query_BAM_Batch(prompts, 100)
+    for i, resp in enumerate(response) :
+        try:
+            output_text = resp[0].text.replace('---', '').replace('\n', '')
+            lst = json.loads(output_text)
+            for comp in lst :
+                ticker = get_ticker_from_name(comp)
+                if ticker :
+                    summ = df.loc[i, "Summary"]
+                    summ = summ.replace(comp, f"[{comp}](https://finance.yahoo.com/quote/{ticker})")
+                    df.loc[i, "Summary"] = summ
+        except Exception as e:
+            print(f'Error retrieving output to list')
+
 
 #Run summary for bullet point summary on single article (id i in dataframe df)
 def single_article_summary(df, i) :
@@ -212,14 +253,20 @@ def get_full_summary(df) :
         for article_id in category_dictionary[key] :
             df.loc[article_id - 1, "Category"] = key
 
+    prompts = []
     for i in range(num_rows) :
         p_bar.progress((i + 2)/(num_rows + 1), f"Getting summary for article {i + 1}")
         articleTitle = df.iloc[i]['Title']
         articleText = df.iloc[i]['Text']
-        response = Query_BAM(Prompt_Input_Single_Bullet(prompt_text, articleTitle, articleText), 200)
-        response = response.replace("---", "").replace("\n", "").replace(" $", " \$").replace("Summary: ", "").replace("  ", "")
-        #print(response)
-        df.loc[i, "Summary"] = response
+        prompts.append(Prompt_Input_Single_Bullet(prompt_text, articleTitle, articleText))
+        # response = Query_BAM(, 200)
+        # response = response.replace("---", "").replace("\n", "").replace(" $", " \$").replace("Summary: ", "").replace("  ", "")
+        # #print(response)
+    
+    BAM_Response = Query_BAM_Batch(prompts, 200)
+        
+    for i in range(num_rows) :
+        df.loc[i, "Summary"] = BAM_Response[i][0].text.replace("---", "").replace("\n", "").replace(" $", " \$").replace("Summary: ", "").replace("  ", "")
 
     p_bar.empty()
     return True
