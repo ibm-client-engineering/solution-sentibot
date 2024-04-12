@@ -26,6 +26,7 @@ yarn-error.log*
 /assets/API_creds.json
 assets/API_creds.json
 /assets/alpha_api.json
+/assets/backend_api/API_creds.json
 
 #pycache
 __pycache__/

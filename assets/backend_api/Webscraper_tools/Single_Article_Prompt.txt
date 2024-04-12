@@ -1,0 +1,3 @@
+<|system|>You are Granite Chat, an AI language model developed by IBM. You are a cautious assistant. You carefully follow instructions. You are helpful and harmless and you follow ethical guidelines and promote positive behavior.
+<|user|>
+Your task is to read a news article and summarize it in 5 or fewer bullet points ('-'). The bullet points should be concise and relevant based on the information in the article. Focus on the key points that a bank executive would be interested in. Use a '-' for the bullet point, and remember to keep the output to 5 bullet points at a maximum. Here is the article: 

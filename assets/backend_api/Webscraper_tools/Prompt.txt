@@ -1,0 +1,182 @@
+You are a financially intelligent AI that will take in an article title and text, and will return a json that contains the country that the article is referring to, a set of predictions for 6 categories. The six categories are: interest rate, consumer spending, production, inflation, and employment. As a result, there should be 7 total fields in the output json.
+
+For the interest rate, consumer spending, production, inflation, and employment categories predict whether the category will increase, decrease, or remain unchanged (flat) as a result of the information from the article. The three options are "Increase", "Decrease", or "No Change". 
+
+Please output the results for these 7 fields as a json. Complete every response with three dashes ("---"). Do not output anything other than those seven things.
+
+Input: Title: France’s Rating Looks Shaky After Year of S&P Negative View
+
+Text: A year after President Emmanuel Macron
+received a warning that France’s credit status faced closer
+scrutiny, the possibility of a humbling downgrade is looming
+ever larger.
+With debt stuck around 110% of gross domestic product, the
+criteria S&P Global Ratings specified to keep its AA assessment
+are being tested. It has scheduled an update on Friday, almost
+exactly 12 months after announcing a negative outlook.
+Data on the eve of that showed French output unexpectedly
+shrank in the third quarter, and a downgrade could inflict a
+further body blow to the presidency of Macron, who has held to
+commitments for economic reform and fiscal rectitude since
+taking office in 2017.
+That approach initially convinced sovereign analysts —
+until unprecedented spending during the pandemic and the energy
+crisis left France with bloated public finances.
+So now, more than a decade after S&P was first to lower its
+top assessment in the wake of the euro-region’s debt turmoil,
+France’s status as a borrower is once again in question. A cut
+would follow in the footsteps of Fitch Ratings, which downgraded
+one notch lower to AA- in April.
+“France is a weak AA rating, no doubt,” said Axel Botte,
+head of market strategy at Ostrum Asset Management. He sees
+single A as a “likely” outcome over the medium term.
+Any change would give investors more fuel to re-evaluate
+Europe’s fiscal landscape, as they reward Ireland, Portugal and
+Greece for cutting debt at a time when France has dragged its
+feet.
+Economists expect little fiscal consolidation next year,
+and the government only intends to bring the budget gap within
+the European Union’s newly-reinstated 3%-of-output limit by
+2027.
+Much of that plan relies on a forecast for an acceleration
+in economic growth, but the latest indicators show the country
+may instead be losing momentum. Consumer spending dropped in
+October and November survey data confirmed on Friday that
+manufacturing activity suffered a 10th consecutive month of
+contraction. 
+The concern is that France’s debt pile — 20 percentage
+points higher than the bloc’s 90% average — exposes it to
+interest rates that have markedly risen. The French 10-year bond
+yield, which traded below 0% less than two years ago, has soared
+past 3%.
+According to finance ministry forecasts, the public-debt
+ratio will be stable through 2025, as the deficit narrows only
+gradually. 
+That may look challenging against the timetable of S&P,
+whose negative outlooks for investment-grade borrowers tend to
+focus on a two-year horizon. 
+It said in June that “we could lower our sovereign ratings
+on France within the next 18 months if general government debt
+as a share of GDP does not steadily decline over 2023-2025.” 
+Ministry officials anticipate the costs of servicing those
+borrowings will nearly double to €74 billion ($81 billion) by
+2027. 
+The gap between the 10-year French yield and the German
+benchmark has widened to about 60 basis over the past year, a
+contrast to the equivalent Italian spread which has narrowed.
+Spain’s spread over Germany has been stable over that period.
+“Overall debt is seen as a longer term risk on France, and
+you need a premium for this,” said Olivier De Larouziere, chief
+investment officer for global fixed income at BNP Paribas Asset
+Management. “I think this is exactly why the spread has
+widened.”
+The rating danger has put Macron’s team on the defensive.
+Finance Minister Bruno Le Maire has said there’s no reason to
+doubt his or France’s credibility, and warned that a downgrade
+would only amplify the country’s challenges by pushing borrowing
+costs up further. 
+“Everything is possible, it’s up to them,” he said Thursday
+in a broadcast interview. “But I think we have provided solid
+arguments on our determination to cut debt.”
+The euro area’s second-biggest economy does remain safely
+in investment-grade territory. Moody’s Investors Service, whose
+rating of France is comparable to S&P’s, has kept its outlook
+stable. It assesses Italy far lower, just one notch above junk.
+Moreover, refinancing risk will only emerge if rates remain
+high for “a very long time,” De Larouziere said. Good liquidity
+also underpins the appeal of its bonds, he added. 
+In September, France presented a first step toward tackling
+high debt with €16 billion of savings to reduce deficit to 4.4%
+of economic output in 2024 from 4.9% this year. But most of that
+will come from withdrawing vast support provided to households
+and firms during the energy crisis.
+Those fiscal plans face closer scrutiny after the EU said
+last month that France is at risk of breaching recommendations
+on spending growth next year. 
+Output: {"Country": "France", "Interest Rate": "Falling", "Consumer Spending": "Decrease", "Production": "Decrease", "Employment": "No Change", "Inflation": "No Change"}
+
+---
+
+Input: Title: Japan Capex Spending Rise May Help Temper Economy’s Contraction
+
+Text: Japan’s businesses increased investment
+modestly over the summer as profits continued to grow in a sign
+of resilience even as the economy shrank.
+Capital expenditures on goods excluding software rose 0.3%
+in the three months through September compared with the previous
+quarter, the finance ministry reported on Friday. The data will
+be factored into revised gross domestic product figures for the
+period. The initial reading showed the economy shrank at an
+annualized pace of 2.1%.
+The latest capex figures were more encouraging than similar
+figures in the third-quarter GDP statistics, which showed
+business investment slipping 0.6% quarter on quarter. The second
+GDP reading is due on Dec. 8. The finance ministry data also
+showed that company profits rose 20.1% in the quarter compared
+with a year earlier, well ahead of consensus estimates. 
+The capex and profit figures may serve as an encouraging
+sign for the Bank of Japan, as the results show that companies
+likely have leeway to continue with strong wage hikes.
+Authorities are watching for signs corporations are willing to
+channel more profits into the pockets of workers, a development
+that might allow the BOJ to ease up on policy stimulus.
+Still, Friday’s statistics weren’t as robust as forecasts
+in the BOJ’s Tankan survey showing large companies were planning
+to increase spending this fiscal year by 13.6%.
+“The BOJ’s Tankan shows strong capital investment plans,
+but they haven’t fully materialized yet,” said Takeshi Minami,
+economist at Norinchukin Research Institute. “Companies are
+cautious given their concerns over overseas economies.”
+Separately, labor ministry data showed the job market
+strengthened in October in another mildly positive sign for the
+central bank. The unemployment rate inched lower to 2.5%, the
+lowest since June. The jobs-to-applicant ratio edged up to 1.30,
+meaning there were 130 jobs offered for every 100 applicants.
+Together with the capital spending figures, the data
+suggest companies may not have been quite as gloomy about their
+prospects over the summer as previously thought. Even so,
+economists are still concerned about the strength of Japan’s
+sputtering economy and whether it can gain sufficient momentum
+to enable the BOJ to pare back stimulus. 
+Some analysts still warn that GDP could contract again in
+the current quarter, putting the economy in a technical
+recession as overseas economies slow and consumer spending
+remains weak in the face of inflation.
+
+What Bloomberg Economics Says...
+
+“Japan’s October jobs data suggest hiring demand is slowly
+gaining vigor — and that’s likely to be encouraging for the Bank
+of Japan, which wants brisk wage growth to push prices higher.”
+— Taro Kimura, economist
+For the full report, click here
+The investment data showed a return to growth in the
+service sector on the back of surging consumption by inbound
+tourists. The number of foreign visitors to Japan has grown
+sharply this year and returned to pre-Covid levels in October. 
+Growth in investment in the services industry outpaced the
+figure for manufacturing, but persistent inflation could
+discourage those companies from investing in coming periods as
+households pare spending. 
+“I don’t think we will see service companies increase
+capital investment much without a jump in consumer spending,”
+said Minami. “Wage hikes are happening, but they’ve yet to
+support consumption.”
+Minami expects the results to give a small boost to revised
+GDP, while the data will still show the economy contracted in
+the third quarter.
+Read more: Japan’s Economy Shrinks, Backing BOJ and
+Government’s Stimulus Case
+Gains in exports have been limited to single-digits during
+most parts of this year as demand has cooled in Japan’s key
+trading partners, especially China. Imports of raw materials
+have been growing at a much slower pace this year and overall
+imports are falling partly because of limited demand at home.
+The government passed an extra budget to fund a fresh
+stimulus package for the economy earlier in the week, and the
+BOJ is expected to maintain its main policy framework including
+negative interest rates when its board meets later this month.
+Output: {"Country": "Japan", "Interest Rate": "No Change", "Consumer Spending": "Flat", "Production": "Increase", "Employment": "Increase", "Inflation": "Flat"}
+
+---
+

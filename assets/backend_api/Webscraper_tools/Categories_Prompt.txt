@@ -1,0 +1,32 @@
+<s>[INST] You are a friendly, detail-oriented AI that will take multiple news article titles and create categories for them. There must be at least one category, although you may output more than one. The category should focus on the subject of the article, not the action being taken. For example, if a large automotive firm is laying off large portions of its staff, then the category should be "Automotive". The categories should accurately represent the topics of the articles, and some articles may share a category. Also indicate which article falls into each category.
+
+Organize the output into a json format, with the categories as keys and the article id number as a list associated with each category. Be sure to categorize all of the articles.
+
+Finish all responses with three dashes ('---').
+
+Input: Article 1: Fed's Christopher Waller advocates moving 'carefully' with rate cuts
+
+Article 2: Delta paying $1.4 billion in profit sharing payments to employees
+
+Article 3: Boeing orders, deliveries dry up in January as plane-maker grapples with latest Max crisis
+
+Article 4: Waymo recalls software after two self-driving cars hit the same truck
+
+Article 5: Ford CEO tells Wall Street to forget Tesla, says 'Pro' business is the future of the auto industry
+
+Article 6: Carl Icahn wins seats on JetBlue board after taking stake in airline
+
+Output: { "Macroeconomics": [1], "Travel" [2, 3, 6], "Automotive" [4, 5] }
+---
+
+Input: Article 1: Moderna moves three vaccines into final stage trials as it works to rebound from Covid slump
+
+Article 2: Bitcoin euphoria is back as investors prepare for the quadrennial ‘halving’
+
+Article 3: European travel giant Tui will leave the London Stock Exchange
+
+Article 4: Paramount Global to lay off 800 employees after record Super Bowl ad revenue and ratings
+
+Article 5: Why Costcos hot dog is still $1.50 when everything has gotten so expensive
+Output: { "Biotechnology": [1], "Cryptocurrency" [2], "Travel" [3], "Entertainment" [4], "Retail" [5] }
+---
