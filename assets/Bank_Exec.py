@@ -1,13 +1,16 @@
 import pandas as pd
 import streamlit as st
-import time
+from datetime import datetime, timedelta
+import pytz
 from Webscraper_tools.Webscrape import *
-from Webscraper_tools.Watsonx_connection import single_article_summary, get_full_summary
+from Webscraper_tools.Watsonx_connection import single_article_summary, get_full_summary, place_ticker_batch
+from Webscraper_tools.ticker_api import get_ticker_from_name
 from menu import menu
 
 st.set_page_config(layout="wide")
-st.title("News Analysis with Watson:blue[x]")
+st.title("News Analysis with watson:blue[x]")
 
+boundary = datetime.now(tz=pytz.timezone("US/Eastern")) - timedelta(days=1)
 
 def refresh() :
    do_webscrape.clear()
@@ -43,22 +46,43 @@ num_articles, _ = df.shape
 if "summary_success" not in st.session_state :
    st.session_state["summary_success"] = False
 
-#Summary Dashboard (commented out for now the prompting is broken)
+#Summary Dashboard
 if "summary_try" not in st.session_state or not st.session_state["summary_try"]:
-   st.session_state["summary_try"] = True
+   st.session_state["summary_try"] = False
+   st.session_state['got_companies'] = [0] * num_articles
    st.session_state["summary_success"] = get_full_summary(df)
+   st.session_state["summary_try"] = True
 
+if 'got_companies' not in st.session_state or not st.session_state['got_companies'] :
+   st.session_state['got_companies'] = False
+
+#Edit summaries to include company links
+if st.session_state['summary_success'] and not any(st.session_state['got_companies']) :
+   place_ticker_batch(df)
+   
+
+#display the dashboard
 if st.session_state['summary_success'] :
    for cat in df.Category.unique() :
       #print("Category: " + cat)
-      st.write("**" + str(cat) + "**")
-      cat_rows = df.loc[df["Category"] == cat].iterrows()
+      if cat == 'nan' or cat is None :
+         continue
+      
+      cat_rows = df.loc[(df["Category"] == cat) & (df["Date"] > boundary)].iterrows()
+      wrote_category = False
+         
       for index, row_in_category in cat_rows :
+         if not wrote_category : #just only write the category if its necessary
+            st.write("**" + str(cat) + "**")
+            wrote_category = True
          #print(row_in_category)
          if row_in_category["Summary"] :
-            st.write("- " + row_in_category["Summary"])
+            summ = row_in_category["Summary"]     
+            st.write(summ)
+                  
 else :
    st.write("Summary retrieval failure")
 
+save_df(df)
 menu()
       
