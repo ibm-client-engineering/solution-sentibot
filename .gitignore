@@ -31,3 +31,8 @@ assets/API_creds.json
 #pycache
 __pycache__/
 *.pyc
+
+#carbon_app
+/assets/Carbon_app/.next/
+/assets/Carbon_app/node_modules/
+

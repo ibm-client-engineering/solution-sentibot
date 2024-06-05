@@ -17,16 +17,16 @@ from genai.schema import (
 from langchain_core.callbacks.base import BaseCallbackHandler
 from genai.extensions.langchain import LangChainInterface
 from tqdm.auto import tqdm
-import streamlit as st
 
 BAM_API_Key = ""
 BAM_URL = ""
-model_id = "ibm-mistralai/mixtral-8x7b-instruct-v01-q"
+model_id = "mistralai/mixtral-8x7b-instruct-v01"
 with open('API_creds.json') as f :
     creds = json.load(f)
     BAM_API_Key = creds["BAM_Key"]
     BAM_URL = creds["BAM_URL"]
 
+got_companies = []
 
 
 def Prompt_Input(prompt, articleTitle, articleText) :
@@ -182,19 +182,52 @@ def get_company_names(text) :
         return []
 
 #place the link to the yahoo finance page in the summaries
-def place_ticker_batch(df) :
+def get_tickers(df) :
     prompt_text = companies_prompt
     prompts = []
+    tickers_added = []
+    #add column if it doesnt exist
+    if 'tickers' not in df :
+        df['tickers'] = None
+
     for index, row in df.iterrows() :
-        if not st.session_state['got_companies'][index - 1] :
+        if df.isna().iloc[index]["tickers"] :
+            prompts.append(Prompt_Input_Companies(prompt_text, row["Summary"]))
+            tickers_added.append(index)
+
+    #get all of the companies from the text
+    response = Query_BAM_Batch(prompts, 100)
+    for index, resp in enumerate(response) :
+        try:
+            output_text = resp[0].text.replace('---', '').replace('\n', '')
+            lst = json.loads(output_text)
+            tickers = []
+            for comp in lst :
+                ticker = get_ticker_from_name(comp)
+                if ticker :
+                    tickers.append(ticker)
+            df.iloc[tickers_added[index]]["tickers"] = tickers
+        except Exception as e:
+            print(f'Error retrieving output to list')
+        break
+
+#place the link to the yahoo finance page in the summaries
+def place_ticker_batch(df) :
+    prompt_text = companies_prompt
+    num_rows, _ = df.shape
+    got_companies = [0] * num_rows
+    prompts = []
+
+    for index, row in df.iterrows() :
+        if got_companies[index] :
             prompts.append(Prompt_Input_Companies(prompt_text, row["Summary"]))
 
     #get all of the companies from the text
     response = Query_BAM_Batch(prompts, 100)
     for resp in response :
-        for j in range(len(st.session_state['got_companies'])) :
-            if not st.session_state['got_companies'][j] :
-                st.session_state['got_companies'][j] = 1
+        for j in range(got_companies) :
+            if not got_companies[j] :
+                got_companies[j] = 1
                 try:
                     output_text = resp[0].text.replace('---', '').replace('\n', '')
                     lst = json.loads(output_text)
@@ -202,11 +235,12 @@ def place_ticker_batch(df) :
                         ticker = get_ticker_from_name(comp)
                         if ticker :
                             summ = df.loc[j, "Summary"]
-                            summ = summ.replace(comp, f"[{comp}](https://finance.yahoo.com/quote/{ticker})")
+                            summ = summ.replace(comp, f'<a href="https://finance.yahoo.com/quote/{ticker}">{comp}</a>')
                             df.loc[j, "Summary"] = summ
                 except Exception as e:
                     print(f'Error retrieving output to list')
                 break
+
 
 
 #Run summary for bullet point summary on single article (id i in dataframe df)
@@ -217,7 +251,7 @@ def single_article_summary(df, i) :
     output_text = Query_BAM(Prompt_Input_Single_Article_Summary(prompt_text, articleTitle, articleText), 300)
     try:
         #print(response.json()['results'])
-        output_text = output_text.replace("$", "\$")
+        #output_text = output_text.replace("$", "\$")
         df.loc[i, 'Multi-Point Summary'] = output_text
         return output_text
     except Exception as e:
@@ -249,7 +283,6 @@ def get_full_summary(df) :
     category_dictionary = {}
     num_rows, _ = df.shape
     prompt_text = single_bullet_prompt
-    p_bar = st.progress(0.0, "Getting categories")
 
     try:
         response = get_categories(df).replace('---', '')
@@ -258,7 +291,6 @@ def get_full_summary(df) :
     except Exception as e:
         print('Error retrieving category output to dictionary')
         print(e)
-        p_bar.empty()
         return False
     
     #assign category to each article
@@ -268,10 +300,9 @@ def get_full_summary(df) :
 
     prompts = []
     for i in range(num_rows) :
-        p_bar.progress((i + 2)/(num_rows + 1), f"Getting summary for article {i + 1}")
         articleTitle = df.iloc[i]['Title']
         articleText = df.iloc[i]['Text']
-        if not st.session_state['summary_try'] or df.isnull().loc[i, "Summary"] :
+        if 'Summary' not in df.columns or df.isnull().loc[i, "Summary"] :
             prompts.append(Prompt_Input_Single_Bullet(prompt_text, articleTitle, articleText))
         # response = Query_BAM(, 200)
         # response = response.replace("---", "").replace("\n", "").replace(" $", " \$").replace("Summary: ", "").replace("  ", "")
@@ -281,12 +312,11 @@ def get_full_summary(df) :
     
     j = 0
     for i in range(num_rows) :
-        if not st.session_state['summary_try'] or df.isnull().loc[i, "Summary"] :
-            df.loc[i, "Summary"] = BAM_Response[j][0].text.replace("---", "").replace("\n", "").replace("$", " \$").replace("Summary: ", "").replace("  ", "")
+        if 'Summary' not in df.columns or df.isnull().loc[i, "Summary"] :
+            df.loc[i, "Summary"] = BAM_Response[j][0].text.replace("---", "").replace("\n", "").replace("Summary: ", "").replace("  ", "")
             j += 1
         else : #this article was already run so we dont need to check for companies
-            st.session_state['got_companies'][i] = 1
+            got_companies[i] = 1
 
 
-    p_bar.empty()
     return True

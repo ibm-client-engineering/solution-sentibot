@@ -4,13 +4,15 @@ import pandas as pd
 from datetime import datetime, timedelta
 import pytz
 from Webscraper_tools.Webscrape import scrape_cnbc, scrape_cnn, save_df
-from Webscraper_tools.Watsonx_connection import Query_BAM_Batch, get_categories_backend, Prompt_Input_Single_Bullet, get_full_summary
+from Webscraper_tools.Watsonx_connection import *
 from Webscraper_tools import single_bullet_prompt
+from flask_cors import CORS
 
 pickle_path = "./data/articles.pickle"
 boundary = datetime.now(tz=pytz.timezone("US/Eastern")) - timedelta(days=1)
 
 app = flask.Flask(__name__)
+CORS(app)
 app.config["DEBUG"] = True
 
 def create_df() :
@@ -63,7 +65,7 @@ def create_df() :
         BAM_Response = Query_BAM_Batch(prompts, 200)
         summary_lst = [None] * len(title_lst)
         for i in range(len(title_lst)) :
-            summary_lst[i] = BAM_Response[i][0].text.replace("---", "").replace("\n", "").replace("$", " \$").replace("Summary: ", "").replace("  ", "")
+            summary_lst[i] = BAM_Response[i][0].text.replace("---", "").replace("\n", "").replace("Summary: ", "").replace("  ", "")
 
 
         #FORM THE MERGED DATAFRAME
@@ -103,6 +105,7 @@ def create_df() :
         return df
 
 df = create_df()
+place_ticker_batch(df)
 save_df(df)
 print("READY")
 
@@ -121,7 +124,19 @@ def get_article() :
 def get_today_news() :
     today_rows = df.loc[(df["Date"] > boundary)]
     if today_rows.shape[0] > 1 :
-        return today_rows.to_json(), 200
+        cat_list = []
+        for cat in today_rows.Category.unique() :
+            #print("Category: " + cat)
+            if cat == 'nan' or cat is None :
+                continue
+            cat_rows = today_rows.loc[(today_rows["Category"] == cat)].iterrows()
+            cat_dict = {"category": cat, "summaries": []}
+            for _, article in cat_rows :
+                if article["Summary"] :
+                    cat_dict['summaries'].append(article["Summary"])
+            cat_list.append(cat_dict)
+
+        return json.dumps(cat_list), 200
     else :
         return "No news today!", 400
 

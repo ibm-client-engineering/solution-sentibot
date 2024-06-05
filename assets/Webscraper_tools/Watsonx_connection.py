@@ -21,7 +21,7 @@ import streamlit as st
 
 BAM_API_Key = ""
 BAM_URL = ""
-model_id = "ibm-mistralai/mixtral-8x7b-instruct-v01-q"
+model_id = "meta-llama/llama-3-70b-instruct"
 with open('API_creds.json') as f :
     creds = json.load(f)
     BAM_API_Key = creds["BAM_Key"]
