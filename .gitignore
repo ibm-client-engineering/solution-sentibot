@@ -36,3 +36,4 @@ __pycache__/
 /assets/Carbon_app/.next/
 /assets/Carbon_app/node_modules/
 
+assets/backend_api/data/articles.pickle

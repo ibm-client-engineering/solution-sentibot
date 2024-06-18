@@ -17,10 +17,12 @@
   },
   "dependencies": {
     "@carbon/react": "1.33.0",
+    "api": "^6.1.1",
     "eslint": "8.44.0",
     "eslint-config-next": "13.4.9",
     "next": "13.4.9",
     "react": "18.2.0",
+    "react-csv": "^2.2.2",
     "react-dom": "18.2.0",
     "sass": "1.63.6"
   },

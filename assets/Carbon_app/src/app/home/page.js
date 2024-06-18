@@ -1,9 +1,6 @@
 'use client';
 
 import {
-  Breadcrumb,
-  BreadcrumbItem,
-  Button,
   Tabs,
   Tab,
   TabList,
@@ -13,17 +10,28 @@ import {
   Column,
 } from '@carbon/react';
 import Image from 'next/image';
-import axios from 'axios';
 import React, { useState, useEffect } from 'react';
+import ExportButton from './export.js';
+import Articles from './articles.js';
 
 export default function LandingPage() {
-  const [data, setData] = useState([]);
+  const [today, setToday] = useState([]);
+  const [articleData, setArticleData] = useState([])
+
   useEffect(() => {
     fetch('http://127.0.0.1:5000/today')
       .then((response) => response.json())
-      .then((json) => setData(json))
+      .then((json) => setToday(json))
       .catch((error) => console.error(error));
   }, []);
+
+    
+  useEffect(() => {
+    fetch('http://127.0.0.1:5000/all')
+        .then((response) => response.json())
+        .then((json) => setArticleData(json))
+        .catch((e) => console.log(e))}, []);
+  
 
   return (
     <Grid className="landing-page" fullWidth>
@@ -48,7 +56,7 @@ export default function LandingPage() {
                   sm={4}
                   className="landing-page__tab-content"
                 >
-                  {data.map((element) => (
+                  {today.map((element) => (
                     <>
                       <h3 className="landing-page__subheading">
                         {element.category}
@@ -78,10 +86,8 @@ export default function LandingPage() {
                   sm={4}
                   className="landing-page__tab-content"
                 >
-                  <p className="landing-page__p">
-                    Rapidly build beautiful and accessible experiences. The
-                    Carbon kit contains all resources you need to get started.
-                  </p>
+                  <Articles articleData={articleData}/> 
+                  
                 </Column>
               </Grid>
             </TabPanel>
@@ -93,46 +99,12 @@ export default function LandingPage() {
                   sm={4}
                   className="landing-page__tab-content"
                 >
-                  <p className="landing-page__p">
-                    Carbon provides styles and components in Vanilla, React,
-                    Angular, and Vue for anyone building on the web.
-                  </p>
+                  <ExportButton articleData={articleData}/>
                 </Column>
               </Grid>
             </TabPanel>
           </TabPanels>
         </Tabs>
-      </Column>
-      <Column lg={16} md={8} sm={4} className="landing-page__r3">
-        <Grid>
-          <Column lg={4} md={2} sm={4}>
-            <h3 className="landing-page__label">The Principles</h3>
-          </Column>
-          <Column
-            lg={{ start: 5, span: 3 }}
-            md={{ start: 3, span: 6 }}
-            sm={4}
-            className="landing-page__title"
-          >
-            Carbon is Open
-          </Column>
-          <Column
-            lg={{ start: 9, span: 3 }}
-            md={{ start: 3, span: 6 }}
-            sm={4}
-            className="landing-page__title"
-          >
-            Carbon is Modular
-          </Column>
-          <Column
-            lg={{ start: 13, span: 3 }}
-            md={{ start: 3, span: 6 }}
-            sm={4}
-            className="landing-page__title"
-          >
-            Carbon is Consistent
-          </Column>
-        </Grid>
       </Column>
     </Grid>
   );

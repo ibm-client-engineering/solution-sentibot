@@ -27,24 +27,23 @@ def scrape_cnn() :
 
     for link in cnn_links:
 
-        page = requests.get(link)
-
-        content = ""
-        soup = BeautifulSoup(page.content, "html.parser")
-        cnn_title = soup.find('h1', {'class': 'headline__text inline-placeholder'})
-        cnn_content = soup.find('div', {'class': 'article__content-container'})
-        for p in cnn_content.find_all('p', {'class': 'paragraph inline-placeholder'}) :
-            content = content + " " + p.text
-        timestamp = soup.find('div', {'class': 'timestamp'})
-        timestr = timestamp.text
-        digits = re.search(r"\d", timestr)
-        dt = parser.parse(timestr[digits.start(0):])
-
         try :
+            page = requests.get(link)
+
+            content = ""
+            soup = BeautifulSoup(page.content, "html.parser")
+            cnn_title = soup.find('h1', {'class': 'headline__text'})
+            cnn_content = soup.find('div', {'class': 'article__content-container'})
+            for p in cnn_content.find_all('p', {'class': 'paragraph'}) :
+                content = content + " " + p.text
+            timestamp = soup.find('div', {'class': 'timestamp'})
+            timestr = timestamp.text
+            digits = re.search(r"\d", timestr)
+            dt = parser.parse(timestr[digits.start(0):])
             cnn_articles.append(['CNN', remove_formatting(cnn_title.text),remove_formatting(content), dt, link])
-        
-        except:
-            print("This article has no text!")
+            
+        except Exception as e:
+            print("Error parsing webpage, exception: ", e)
     
     return cnn_articles
 

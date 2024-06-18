@@ -42,6 +42,12 @@ html {
   font-weight: 600;
 }
 
+.landing-page__middleheading {
+  @include type-style('productive-heading-04');
+
+  font-size: 32px;
+}
+
 .landing-page__p {
   @include type-style('productive-heading-03');
   margin-top: $spacing-06;
@@ -107,4 +113,16 @@ html {
   .landing-page__banner {
     padding-bottom: $spacing-05 * 4;
   }
+}
+
+.articlesgrid {
+  padding-left: 1em;
+}
+
+.articleslist {
+  padding-left: 0;
+}
+
+.articlestext {
+  padding-top: 2em;
 }

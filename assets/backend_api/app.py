@@ -143,7 +143,7 @@ def get_today_news() :
 @app.route("/all")
 def get_all() :
     if df.shape[0] > 1 :
-        return df.to_json(), 200
+        return df.to_json(orient='records'), 200
     else :
         return "Dataframe is empty", 400
     
