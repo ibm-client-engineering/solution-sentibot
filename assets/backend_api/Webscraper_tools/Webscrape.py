@@ -10,7 +10,6 @@ import streamlit as st
 pickle_path = "data/articles.pickle"
 
 #CNN
-@st.cache_data
 def scrape_cnn() :
     cnn_URL = "https://www.cnn.com/business"
     cnn_page = requests.get(cnn_URL)
@@ -50,7 +49,6 @@ def scrape_cnn() :
 
 
 #CNBC
-@st.cache_data
 def scrape_cnbc() :
     cnbc_URL = "https://www.cnbc.com/business/"
     cnbc_page = requests.get(cnbc_URL)
@@ -146,14 +144,10 @@ def create_df(articles) :
     
     return df
 
-@st.cache_resource(show_spinner="Retrieving articles")
 def do_webscrape() :
     cnn_articles = scrape_cnn()
     cnbc_articles = scrape_cnbc()
     combined_articles = cnn_articles + cnbc_articles
 
     return create_df(combined_articles)
-
-def save_df(df) :
-    df.to_pickle(pickle_path)
 
