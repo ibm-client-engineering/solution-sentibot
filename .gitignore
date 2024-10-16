@@ -23,10 +23,8 @@ yarn-debug.log*
 yarn-error.log*
 
 #API credentials file
-/assets/API_creds.json
-assets/API_creds.json
-/assets/alpha_api.json
-/assets/backend_api/API_creds.json
+alpha_api.json
+API_creds.json
 
 #pycache
 __pycache__/
