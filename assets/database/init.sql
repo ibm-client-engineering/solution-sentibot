@@ -5,6 +5,7 @@ CREATE TABLE articletable
     title TEXT,
     body TEXT,
     published TIMESTAMP,
-    link text,
-    summary text
+    link TEXT,
+    category VARCHAR(255),
+    summary TEXT
 );

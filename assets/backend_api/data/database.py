@@ -18,7 +18,7 @@ class Database() :
         Args:
             data (List[List]): Data to add
         """
-        query="INSERT INTO  articletable (source, title, body, published, link)  VALUES(%s,%s, %s, %s)"
+        query="INSERT INTO  articletable (source, title, body, published, link, category, summary)  VALUES(%s, %s, %s, %s, %s, %s)"
         for d in data :
             self.add_data.append(d)
         self.conn.execute(query,self.add_data)
@@ -66,3 +66,12 @@ class Database() :
             return final_data
         else :
             return None
+        
+    def check_exists(self, title) :
+        """Check if an article with this title exists in the database
+
+                Returns:
+            exists: boolean
+        """
+        data = self.conn.execute(f"SELECT EXISTS(SELECT 1 FROM articletable WHERE TITLE='{title}')").fetchone()
+        return data

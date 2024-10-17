@@ -14,6 +14,14 @@ services:
       - ./db:/var/lib/postgresql/data
       - ./init.sql:/docker-entrypoint-initdb.d/create_tables.sql
 
+  backend:
+    platform: linux/amd64
+    restart: unless-stopped
+    mem_limit: 4g
+    build:
+      context: ./backend_api
+      dockerfile: ./Dockerfile
+
 volumes:
   db:
     driver: local
